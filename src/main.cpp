@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
-#include "Mat4.h"
+#include "Matrix4.h"
 #include "Vector4.h"
 
 int main(void) {
@@ -27,16 +27,11 @@ int main(void) {
         return -1;
     }
 
-    Mat4 view;
+    Matrix4 view;
     view.Translate(Vector4(10.0f, 0.0f, 0.0f));
-
     Vector4 vec(10.0f, 10.0f, 10.0f);
-
     Vector4 res = view * vec;
-
-    printf("X: %f\n", res.x);
-    printf("Y: %f\n", res.y);
-    printf("Z: %f\n", res.z);
+    res.Print();
 
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

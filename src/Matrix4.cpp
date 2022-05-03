@@ -1,18 +1,18 @@
-#include "Mat4.h"
+#include "Matrix4.h"
 
-Mat4::Mat4() {
-    for (int i = 0; i < MAT4_SIZE; i++) {
+Matrix4::Matrix4() {
+    for (int i = 0; i < MATRIX4_SIZE; i++) {
         data[i] = (i % 5 == 0) ? 1.0f : 0.0f;
     }
 }
 
-void Mat4::Translate(Vector4 pos) {
+void Matrix4::Translate(Vector4 pos) {
     data[12] = pos.x;
     data[13] = pos.y;
     data[14] = pos.z;
 }
 
-Vector4 Mat4::operator * (const Vector4 vector4) {
+Vector4 Matrix4::operator * (const Vector4 vector4) {
     Vector4 resultVector;
 
     resultVector.x += data[0] * vector4.x;
