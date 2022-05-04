@@ -6,13 +6,13 @@ Matrix4::Matrix4() {
     }
 }
 
-void Matrix4::Translate(Vector4 pos) {
+void Matrix4::Translate(const Vector4& pos) {
     data[12] = pos.x;
     data[13] = pos.y;
     data[14] = pos.z;
 }
 
-Vector4 Matrix4::operator * (const Vector4 vector4) {
+Vector4 Matrix4::operator*(const Vector4& vector4) {
     Vector4 resultVector;
 
     resultVector.x += data[0] * vector4.x;
@@ -36,4 +36,14 @@ Vector4 Matrix4::operator * (const Vector4 vector4) {
     resultVector.w += data[15] * vector4.w;
 
     return resultVector;
+}
+
+std::ostream& operator<<(std::ostream& os, const Matrix4& mat4) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            os << mat4.data[i + (j * 4)] << " ";
+        }
+        os << "\n";
+    }
+    return os;
 }

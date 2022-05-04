@@ -29,9 +29,11 @@ int main(void) {
 
     Matrix4 view;
     view.Translate(Vector4(10.0f, 0.0f, 0.0f, 1.0f));
+    std::cout << view << std::endl;
+
     Vector4 vec(10.0f, 10.0f, 10.0f, 1.0f);
     Vector4 res = view * vec;
-    res.Print();
+    std::cout << res << std::endl;
 
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

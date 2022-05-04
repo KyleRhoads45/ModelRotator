@@ -1,11 +1,12 @@
 #ifndef VECTOR4
 #define VECTOR4
 
+#include <iostream>
+
 struct Vector4 {
 
+    Vector4() = default;
     Vector4(float x, float y, float z, float w);
-
-    void Print();
 
     float x = 0.0f;
     float y = 0.0f;
@@ -13,5 +14,7 @@ struct Vector4 {
     float w = 1.0f;
 
 };
+
+std::ostream& operator<<(std::ostream& os, const Vector4& vector4);
 
 #endif
