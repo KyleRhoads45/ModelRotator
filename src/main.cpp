@@ -28,8 +28,8 @@ int main(void) {
     }
 
     Matrix4 view;
-    view.Translate(Vector4(10.0f, 0.0f, 0.0f));
-    Vector4 vec(10.0f, 10.0f, 10.0f);
+    view.Translate(Vector4(10.0f, 0.0f, 0.0f, 1.0f));
+    Vector4 vec(10.0f, 10.0f, 10.0f, 1.0f);
     Vector4 res = view * vec;
     res.Print();
 
