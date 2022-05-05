@@ -31,9 +31,16 @@ int main(void) {
     view.Translate(Vector4(10.0f, 0.0f, 0.0f, 1.0f));
     std::cout << view << std::endl;
 
-    Vector4 vec(10.0f, 10.0f, 10.0f, 1.0f);
-    Vector4 res = view * vec;
-    std::cout << res << std::endl;
+    Matrix4 model;
+    model.Translate(Vector4(0.0f, 5.0f, 0.0f, 1.0f));
+    std::cout << model << std::endl;
+
+    Vector4 pos(10.0f, 10.0f, 10.0f, 1.0f);
+    Vector4 rtl = pos * model * view;
+    Vector4 ltr = view * (model * pos);
+
+    std::cout << "right to left: " << rtl << std::endl;
+    std::cout << "left to right: " << ltr << std::endl;
 
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
