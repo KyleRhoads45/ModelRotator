@@ -1,8 +1,7 @@
-#include <stdio.h>
+#include <iostream>
 #include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
-#include "Matrix4.h"
-#include "Vector4.h"
+#include "Math/KyleMath.h"
 
 int main(void) {
     GLFWwindow* window;
@@ -29,18 +28,15 @@ int main(void) {
 
     Matrix4 view;
     view.Translate(Vector4(10.0f, 0.0f, 0.0f, 1.0f));
+
+    Matrix4 proj;
+    proj.Translate(Vector4(12.0f, 5.0f, 2.0f, 1.0f));
+
+    Vector4 pos(2.0f, 3.0f, 4.0f, 1.0f);
+
+    std::cout << proj << std::endl;
     std::cout << view << std::endl;
-
-    Matrix4 model;
-    model.Translate(Vector4(0.0f, 5.0f, 0.0f, 1.0f));
-    std::cout << model << std::endl;
-
-    Vector4 pos(10.0f, 10.0f, 10.0f, 1.0f);
-    Vector4 rtl = pos * model * view;
-    Vector4 ltr = view * (model * pos);
-
-    std::cout << "right to left: " << rtl << std::endl;
-    std::cout << "left to right: " << ltr << std::endl;
+    std::cout << proj * view * pos << std::endl;
 
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

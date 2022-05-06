@@ -1,11 +1,29 @@
-CC = g++
+CXX = g++
 CFLAGS = -Wall -std=c++17
 BUILD_DIR = ../build/
 INCLUDE_DIR = -I ../include
 LIBS = -L ../lib -lglfw3 -lgdi32
 
-#external source files
-GLAD = ../include/GLAD/glad.c
+OBJECTS = $(addprefix $(BUILD_DIR), Main.o Glad.o Vector3.o Vector4.o Matrix4.o)
 
-ModelRotator:	main.cpp Matrix4.cpp Vector4.cpp $(GLAD) 
-	$(CC) $(CFLAGS) $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR) $(LIBS)
+ModelRotator:	$(OBJECTS) 
+	$(CXX) $(CFLAGS) $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR) $(LIBS)
+
+$(BUILD_DIR)Main.o:	main.cpp
+	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+
+$(BUILD_DIR)Glad.o:	../include/GLAD/glad.c
+	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+
+$(BUILD_DIR)Vector3.o:	Math/Vector3.cpp
+	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
+
+$(BUILD_DIR)Vector4.o:	Math/Vector4.cpp
+	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
+
+$(BUILD_DIR)Matrix4.o:	Math/Matrix4.cpp
+	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
+
+clean:
+	rm $(BUILD_DIR)ModelRotator.exe
+	rm -r $(BUILD_DIR)*.o
