@@ -25,5 +25,5 @@ $(BUILD_DIR)Matrix4.o:	Math/Matrix4.cpp
 	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
 
 clean:
-	rm $(BUILD_DIR)ModelRotator.exe
-	rm -r $(BUILD_DIR)*.o
+	del ..\build\*.o
+	del ..\build\*.exe
