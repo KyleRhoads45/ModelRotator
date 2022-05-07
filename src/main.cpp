@@ -2,6 +2,7 @@
 #include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
 #include "Math/KyleMath.h"
+#include "Mesh.h"
 
 int main(void) {
     GLFWwindow* window;
@@ -34,14 +35,19 @@ int main(void) {
 
     Vector4 pos(2.0f, 3.0f, 4.0f, 1.0f);
 
-    std::cout << proj << std::endl;
-    std::cout << view << std::endl;
-    std::cout << proj * view * pos << std::endl;
+    Mesh boxMesh("box.obj");
+
+    for (int i = 0; i < 8; i++) {
+        std::cout << boxMesh.verts[i].position << std::endl;
+    }
 
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glfwSwapBuffers(window);
         glfwPollEvents();
+        for (int i = 0; i < 8; i++) {
+            std::cout << boxMesh.verts[i].position << std::endl;
+        }
     }
 
     glfwTerminate();
