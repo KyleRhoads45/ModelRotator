@@ -3,6 +3,7 @@
 #include "GLFW/glfw3.h"
 #include "Math/KyleMath.h"
 #include "Mesh.h"
+#include "Shader.h"
 
 int main(void) {
     GLFWwindow* window;
@@ -37,17 +38,14 @@ int main(void) {
 
     Mesh boxMesh("box.obj");
 
-    for (int i = 0; i < 8; i++) {
-        std::cout << boxMesh.verts[i].position << std::endl;
-    }
+    Shader shader("Lit.vert", "Lit.frag");
+    shader.Bind();
+    shader.EnableTextureUnit(0);
 
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glfwSwapBuffers(window);
         glfwPollEvents();
-        for (int i = 0; i < 8; i++) {
-            std::cout << boxMesh.verts[i].position << std::endl;
-        }
     }
 
     glfwTerminate();

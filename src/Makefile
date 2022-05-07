@@ -4,7 +4,7 @@ BUILD_DIR = ../build/
 INCLUDE_DIR = -I ../include
 LIBS = -L ../lib -lglfw3 -lgdi32
 
-OBJECTS = $(addprefix $(BUILD_DIR), Main.o Mesh.o Glad.o Vector3.o Vector4.o Matrix4.o)
+OBJECTS = $(addprefix $(BUILD_DIR), Main.o Mesh.o Shader.o Glad.o Vector2.o Vector3.o Vector4.o Matrix4.o)
 
 ModelRotator:	$(OBJECTS) 
 	$(CXX) $(CFLAGS) $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR) $(LIBS)
@@ -15,8 +15,14 @@ $(BUILD_DIR)Main.o:	main.cpp
 $(BUILD_DIR)Mesh.o:	Mesh.cpp
 	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
 
+$(BUILD_DIR)Shader.o:	Shader.cpp
+	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+
 $(BUILD_DIR)Glad.o:	../include/GLAD/glad.c
 	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+
+$(BUILD_DIR)Vector2.o:	Math/Vector2.cpp
+	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
 
 $(BUILD_DIR)Vector3.o:	Math/Vector3.cpp
 	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
