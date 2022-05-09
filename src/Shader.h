@@ -17,7 +17,7 @@ public:
 
 private:
 
-    char* LoadShaderFile(const std::string& filePath);
+    std::string LoadShaderFile(const std::string& filePath);
     void CheckCompileErrors(const unsigned int shader, const std::string& type);
 
     unsigned int shaderId; 

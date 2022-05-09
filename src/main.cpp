@@ -66,6 +66,9 @@ int main(void) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * boxMesh.indexCount, boxMesh.indicies, GL_STATIC_DRAW);
 
     float rot = 0.0f;
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

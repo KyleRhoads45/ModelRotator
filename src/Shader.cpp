@@ -2,23 +2,26 @@
 #include "GLAD/glad.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 Shader::Shader(const std::string& vertFile, const std::string& fragFile) {
-    char* vertCodeBuffer = LoadShaderFile(vertFile);
-    char* fragCodeBuffer = LoadShaderFile(fragFile);
+    std::string vertCodeBuffer = LoadShaderFile(vertFile);
+    std::string fragCodeBuffer = LoadShaderFile(fragFile);
 
     //Compile shaders
     unsigned int vertex, fragment;
+    const char* vCode = vertCodeBuffer.c_str();
+    const char* fCode = fragCodeBuffer.c_str();
 
     //Vertex shader
     vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vertCodeBuffer, NULL);
+    glShaderSource(vertex, 1, &vCode, NULL);
     glCompileShader(vertex);
     CheckCompileErrors(vertex, "Vertex");
 
     //Fragment Shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fragCodeBuffer, NULL);
+    glShaderSource(fragment, 1, &fCode, NULL);
     glCompileShader(fragment);
     CheckCompileErrors(fragment, "Fragment");
 
@@ -32,9 +35,6 @@ Shader::Shader(const std::string& vertFile, const std::string& fragFile) {
     //Delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vertex);
     glDeleteShader(fragment);
-
-    delete[] vertCodeBuffer;
-    delete[] fragCodeBuffer;
 }
 
 void Shader::Bind() {
@@ -49,23 +49,21 @@ void Shader::SetUniformMat4(const std::string& name, const Matrix4& mat4) {
     glUniformMatrix4fv(glGetUniformLocation(shaderId, name.c_str()), 1, GL_FALSE, mat4.data);
 }
 
-char* Shader::LoadShaderFile(const std::string& filePath) {
+std::string Shader::LoadShaderFile(const std::string& filePath) {
     std::fstream file(filePath);
+    std::string codeString;
 
     if (file.fail()) {
         std::cout << "Failed to open " << filePath << std::endl;
-        return 0;
+        return codeString;
     }
 
-    file.seekg(0, file.end);
-    int codeLength = file.tellg();
-    file.seekg(0, file.beg);
-
-    char* codeBuffer = new char[codeLength] { '\0' };
-    file.rdbuf()->sgetn(codeBuffer, codeLength);
+    std::stringstream stream;
+    stream << file.rdbuf();
+    codeString = stream.str();
 
     file.close();
-    return codeBuffer;
+    return codeString;
 }
 
 void Shader::CheckCompileErrors(const unsigned int shader, const std::string& type) {
@@ -76,6 +74,7 @@ void Shader::CheckCompileErrors(const unsigned int shader, const std::string& ty
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
             std::cout << "Error within " << type << std::endl;
+            std::cout << infoLog << std::endl;
         }
     }
     else {
@@ -83,6 +82,7 @@ void Shader::CheckCompileErrors(const unsigned int shader, const std::string& ty
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
             std::cout << "Error within " << type << std::endl;
+            std::cout << infoLog << std::endl;
         }
     }
 }
