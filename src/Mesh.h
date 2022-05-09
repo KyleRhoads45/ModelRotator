@@ -10,6 +10,10 @@ struct Mesh {
     ~Mesh();
 
     Vertex* verts;
+    unsigned int* indicies;
+
+    int vertCount = 0;
+    int indexCount = 0; 
 
 };
 

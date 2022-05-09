@@ -1,5 +1,7 @@
 #include "Matrix4.h"
 #include "Vector4.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 Matrix4::Matrix4() {
     for (int i = 0; i < MATRIX4_SIZE; i++) {
@@ -13,10 +15,26 @@ Matrix4::Matrix4(float data[]) {
     }
 }
 
+void Matrix4::Perspective() {
+    data[0] = 1.357995f;
+    data[5] = 2.414213f;
+    data[10] = -1.002002;  
+    data[11] = -1.0f;
+    data[14] = -0.200200f; 
+}
+
 void Matrix4::Translate(const Vector4& pos) {
     data[12] = pos.x;
     data[13] = pos.y;
     data[14] = pos.z;
+}
+
+void Matrix4::Rotate(float deg) {
+    float rad = deg * (M_PI / 180);
+    data[0] = cos(rad);
+    data[2] = -sin(rad);
+    data[8] = sin(rad);
+    data[10] = cos(rad);
 }
 
 float Matrix4::MultiplyRowByCol(const Matrix4& rowMat, int rowIndex, const Matrix4& colMat, int colIndex) {

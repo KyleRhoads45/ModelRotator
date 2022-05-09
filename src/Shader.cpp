@@ -45,6 +45,10 @@ void Shader::EnableTextureUnit(int texUnit) {
     glUniform1iv(glGetUniformLocation(shaderId, "tex"), 1, &texUnit);
 }
 
+void Shader::SetUniformMat4(const std::string& name, const Matrix4& mat4) {
+    glUniformMatrix4fv(glGetUniformLocation(shaderId, name.c_str()), 1, GL_FALSE, mat4.data);
+}
+
 char* Shader::LoadShaderFile(const std::string& filePath) {
     std::fstream file(filePath);
 

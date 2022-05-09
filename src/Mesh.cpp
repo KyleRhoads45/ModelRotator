@@ -1,39 +1,72 @@
 #include "Mesh.h"
+#include <string.h>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
 
 Mesh::Mesh(const char* modelFilePath) {
-    std::string word;
+    unsigned int curIndex = 0;
     std::vector<Vertex> tempVerts;
+    std::vector<unsigned int> tempIndicies;
 
-    int curTexCoordIndex = 0;
+    std::vector<Vector3> positions;
+    std::vector<Vector3> normals;
+    std::vector<Vector2> textureCoords;
 
+    std::string word;
     std::fstream file(modelFilePath, std::fstream::in);
     while (file >> word) {
         if (word == "v") {
-            Vertex vert;
-            file >> vert.position.x;
-            file >> vert.position.y;
-            file >> vert.position.z;
-            tempVerts.push_back(vert);
+            Vector3 pos;
+            file >> pos.x >> pos.y >> pos.z;
+            positions.push_back(pos);
+            continue;
         }
-
         if (word == "vt") {
-            Vertex& vert = tempVerts[curTexCoordIndex];
-            file >> vert.texCoord.x;
-            file >> vert.texCoord.y;
+            Vector2 texCoord;
+            file >> texCoord.x >> texCoord.y; 
+            textureCoords.push_back(texCoord);
+            continue;
+        }
+        if (word == "vn") {
+            Vector3 normal;
+            file >> normal.x >> normal.y >> normal.z;
+            normals.push_back(normal);
+            continue;
+        }
+        if (word == "f") {
+            std::string vertString;
+            for (int i = 0; i < 4; i++) {
+                file >> vertString;
+                int posIndex, texCoordIndex, normalIndex;
+                sscanf(vertString.c_str(), "%d/%d/%d", &posIndex, &texCoordIndex, &normalIndex);
+                tempVerts.push_back(Vertex(positions[posIndex - 1], normals[normalIndex - 1], textureCoords[texCoordIndex - 1]));
+            }
 
-            std::cout << vert.texCoord << std::endl;
-            curTexCoordIndex++;
+            tempIndicies.push_back(curIndex);
+            tempIndicies.push_back(curIndex + 1);
+            tempIndicies.push_back(curIndex + 2);
+
+            tempIndicies.push_back(curIndex);
+            tempIndicies.push_back(curIndex + 2);
+            tempIndicies.push_back(curIndex + 3);
+
+            curIndex += 4; 
         }
     }
     file.close();
 
-    verts = new Vertex[tempVerts.size()];
-    for (size_t i = 0; i < tempVerts.size(); i++) {
+    vertCount = tempVerts.size();
+    verts = new Vertex[vertCount];
+    for (int i = 0; i < vertCount; i++) {
         verts[i] = tempVerts[i];
+    }
+
+    indexCount = tempIndicies.size();
+    indicies = new unsigned int[indexCount];
+    for (int i = 0; i < indexCount; i++) {
+        indicies[i] = tempIndicies[i];
     }
 }
 

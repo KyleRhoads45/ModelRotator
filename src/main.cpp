@@ -28,22 +28,53 @@ int main(void) {
         return -1;
     }
 
-    Matrix4 view;
-    view.Translate(Vector4(10.0f, 0.0f, 0.0f, 1.0f));
-
-    Matrix4 proj;
-    proj.Translate(Vector4(12.0f, 5.0f, 2.0f, 1.0f));
+    Matrix4 model, view, proj;
+    view.Translate(Vector4(0.0f, 0.0f, -5.0f, 1.0f));
+    proj.Perspective();
 
     Vector4 pos(2.0f, 3.0f, 4.0f, 1.0f);
 
-    Mesh boxMesh("box.obj");
+    Mesh boxMesh("monkey.obj");
 
     Shader shader("Lit.vert", "Lit.frag");
     shader.Bind();
     shader.EnableTextureUnit(0);
 
+    shader.SetUniformMat4("model", model);
+    shader.SetUniformMat4("view", view);
+    shader.SetUniformMat4("projection", proj);
+
+    unsigned int vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    unsigned int vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * boxMesh.vertCount, boxMesh.verts, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    unsigned int ebo;
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * boxMesh.indexCount, boxMesh.indicies, GL_STATIC_DRAW);
+
+    float rot = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        model.Rotate(rot);
+        shader.SetUniformMat4("model", model);
+        rot += 0.01f;
+
+        glDrawElements(GL_TRIANGLES, boxMesh.indexCount, GL_UNSIGNED_INT, 0);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

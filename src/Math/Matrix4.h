@@ -10,7 +10,9 @@ struct Matrix4 {
     Matrix4();
     Matrix4(float newData[]);
 
+    void Perspective();
     void Translate(const Vector4& pos);
+    void Rotate(float deg);
     float MultiplyRowByCol(const Matrix4& rowMat, int rowIndex, const Matrix4& colMat, int colIndex);
 
     Vector4 operator*(const Vector4& vec4);
