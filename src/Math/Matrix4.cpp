@@ -30,11 +30,14 @@ void Matrix4::Translate(const Vector4& pos) {
 }
 
 void Matrix4::Rotate(float deg) {
+    Matrix4 rotMat;
     float rad = deg * (M_PI / 180);
-    data[0] = cos(rad);
-    data[2] = -sin(rad);
-    data[8] = sin(rad);
-    data[10] = cos(rad);
+    rotMat.data[0] = cos(rad);
+    rotMat.data[2] = -sin(rad);
+    rotMat.data[8] = sin(rad);
+    rotMat.data[10] = cos(rad);
+
+    *this = *this * rotMat; 
 }
 
 float Matrix4::MultiplyRowByCol(const Matrix4& rowMat, int rowIndex, const Matrix4& colMat, int colIndex) {

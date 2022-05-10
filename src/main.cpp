@@ -29,10 +29,8 @@ int main(void) {
     }
 
     Matrix4 model, view, proj;
-    view.Translate(Vector4(0.0f, -0.3f, -4.0f, 1.0f));
+    model.Translate(Vector4(0.0f, -0.3f, -4.0f, 1.0f));
     proj.Perspective();
-
-    Vector4 pos(2.0f, 3.0f, 4.0f, 1.0f);
 
     Mesh boxMesh("spider.obj");
 
@@ -41,7 +39,7 @@ int main(void) {
     shader.EnableTextureUnit(0);
 
     shader.SetUniformMat4("model", model);
-    shader.SetUniformMat4("view", view);
+    //shader.SetUniformMat4("view", view);
     shader.SetUniformMat4("projection", proj);
 
     unsigned int vao;
