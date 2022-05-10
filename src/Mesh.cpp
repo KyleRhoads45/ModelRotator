@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 Mesh::Mesh(const char* modelFilePath) {
     int curVertIndex = 0;
@@ -19,7 +20,11 @@ Mesh::Mesh(const char* modelFilePath) {
     char line[lineLength];
 
     std::fstream file(modelFilePath, std::fstream::in);
-    while (file.getline(line, lineLength)) {
+    std::stringstream fileStringStream;
+    fileStringStream << file.rdbuf();
+    file.close();
+
+    while (fileStringStream.getline(line, lineLength)) {
         std::string linetype = strtok(line, space);
 
         if (linetype == "v") {
@@ -71,7 +76,6 @@ Mesh::Mesh(const char* modelFilePath) {
             curVertIndex += faceVertCount;
         }
     }
-    file.close();
 
     vertCount = tempVerts.size();
     verts = new Vertex[vertCount];
