@@ -17,7 +17,6 @@ void main() {
     float diffuseStrength = max(dot(fragNormal, lightDir), 0.0);
     vec3 diffuseColor = lightColor * diffuseStrength;
 
-    //vec3 objColor = vec3(1.0, 0.5, 0.2);
     vec3 objColor = vec3(0.5, 0.5, 0.5);
 
     vec3 finalColor = (ambientColor + diffuseColor) * objColor;

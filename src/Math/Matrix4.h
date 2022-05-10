@@ -11,13 +11,15 @@ struct Matrix4 {
     Matrix4();
     Matrix4(float newData[]);
 
-    void Perspective();
-    void Translate(const Vector4& pos);
-    void Rotate(float deg);
-    float MultiplyRowByCol(const Matrix4& rowMat, int rowIndex, const Matrix4& colMat, int colIndex);
-
     Vector4 operator*(const Vector4& vec4);
     Matrix4 operator*(const Matrix4& mat4);
+
+    static Matrix4 Translate(const Matrix4& mat4, const Vector4& translation);
+    static Matrix4 RotateYAxis(const Matrix4& mat4, const float degrees);
+
+    static Matrix4 Perspective();
+    static Matrix4 Multiply(const Matrix4& mat1, const Matrix4& mat2);
+    static float MultiplyRowByCol(const Matrix4& rowMat, const int rowIndex, const Matrix4& colMat, const int colIndex);
 
     float data[MATRIX4_SIZE];
 

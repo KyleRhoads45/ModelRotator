@@ -28,19 +28,17 @@ int main(void) {
         return -1;
     }
 
-    Matrix4 model, view, proj;
-    model.Translate(Vector4(0.0f, -0.3f, -4.0f, 1.0f));
-    proj.Perspective();
-
-    Mesh boxMesh("spider.obj");
+    Matrix4 proj = Matrix4::Perspective();
+    Matrix4 model = Matrix4::Translate(Matrix4(), Vector4(0.0f, -0.3f, -4.0f, 1.0f));
 
     Shader shader("Lit.vert", "Lit.frag");
     shader.Bind();
     shader.EnableTextureUnit(0);
 
     shader.SetUniformMat4("model", model);
-    //shader.SetUniformMat4("view", view);
     shader.SetUniformMat4("projection", proj);
+
+    Mesh mesh("spider.obj");
 
     unsigned int vao;
     glGenVertexArrays(1, &vao);
@@ -49,7 +47,7 @@ int main(void) {
     unsigned int vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * boxMesh.vertCount, boxMesh.verts, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * mesh.vertCount, mesh.verts, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
@@ -61,7 +59,7 @@ int main(void) {
     unsigned int ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * boxMesh.indexCount, boxMesh.indicies, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh.indexCount, mesh.indicies, GL_STATIC_DRAW);
 
     float rot = 0.0f;
 
@@ -71,11 +69,10 @@ int main(void) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 
-        model.Rotate(rot);
-        shader.SetUniformMat4("model", model);
+        shader.SetUniformMat4("model", Matrix4::RotateYAxis(model, rot));
         rot += 0.01f;
 
-        glDrawElements(GL_TRIANGLES, boxMesh.indexCount, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
