@@ -2,8 +2,9 @@
 #define MATRIX4
 
 #include <iostream>
-struct Vector4;
 #define MATRIX4_SIZE 16
+
+struct Vector4;
 
 struct Matrix4 {
 
@@ -18,7 +19,6 @@ struct Matrix4 {
     Vector4 operator*(const Vector4& vec4);
     Matrix4 operator*(const Matrix4& mat4);
 
-    float* dataPtr;
     float data[MATRIX4_SIZE];
 
 };
