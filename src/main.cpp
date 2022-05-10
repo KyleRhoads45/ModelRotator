@@ -19,7 +19,7 @@ int main(void) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    window = glfwCreateWindow(960, 540, "Model Rotator", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "Model Rotator (340,000 verts)", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0);
 
@@ -29,12 +29,12 @@ int main(void) {
     }
 
     Matrix4 model, view, proj;
-    view.Translate(Vector4(0.0f, 0.0f, -5.0f, 1.0f));
+    view.Translate(Vector4(0.0f, -0.3f, -4.0f, 1.0f));
     proj.Perspective();
 
     Vector4 pos(2.0f, 3.0f, 4.0f, 1.0f);
 
-    Mesh boxMesh("monkey.obj");
+    Mesh boxMesh("spider.obj");
 
     Shader shader("Lit.vert", "Lit.frag");
     shader.Bind();
@@ -71,6 +71,7 @@ int main(void) {
     glEnable(GL_CULL_FACE);
     while (!glfwWindowShouldClose(window)) {
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 
         model.Rotate(rot);
         shader.SetUniformMat4("model", model);

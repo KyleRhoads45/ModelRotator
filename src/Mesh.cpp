@@ -1,58 +1,74 @@
 #include "Mesh.h"
+#include <vector>
 #include <string.h>
 #include <string>
-#include <vector>
 #include <fstream>
 #include <iostream>
 
 Mesh::Mesh(const char* modelFilePath) {
-    unsigned int curIndex = 0;
+    int curVertIndex = 0;
     std::vector<Vertex> tempVerts;
     std::vector<unsigned int> tempIndicies;
 
     std::vector<Vector3> positions;
     std::vector<Vector3> normals;
-    std::vector<Vector2> textureCoords;
+    std::vector<Vector2> texCoords;
 
-    std::string word;
+    const char* space = " ";
+    const int lineLength = 100;
+    char line[lineLength];
+
     std::fstream file(modelFilePath, std::fstream::in);
-    while (file >> word) {
-        if (word == "v") {
+    while (file.getline(line, lineLength)) {
+        std::string linetype = strtok(line, space);
+
+        if (linetype == "v") {
             Vector3 pos;
-            file >> pos.x >> pos.y >> pos.z;
+            pos.x = atof(strtok(NULL, space));
+            pos.y = atof(strtok(NULL, space));
+            pos.z = atof(strtok(NULL, space));
             positions.push_back(pos);
             continue;
         }
-        if (word == "vt") {
+
+        if (linetype == "vt") {
             Vector2 texCoord;
-            file >> texCoord.x >> texCoord.y; 
-            textureCoords.push_back(texCoord);
+            texCoord.x = atof(strtok(NULL, space));
+            texCoord.y = atof(strtok(NULL, space));
+            texCoords.push_back(texCoord);
             continue;
         }
-        if (word == "vn") {
+
+        if (linetype == "vn") {
             Vector3 normal;
-            file >> normal.x >> normal.y >> normal.z;
+            normal.x = atof(strtok(NULL, space));
+            normal.y = atof(strtok(NULL, space));
+            normal.z = atof(strtok(NULL, space));
             normals.push_back(normal);
             continue;
         }
-        if (word == "f") {
-            std::string vertString;
-            for (int i = 0; i < 4; i++) {
-                file >> vertString;
+
+        if (linetype == "f") {
+            int faceVertCount = 0;
+            char* faceInstr = strtok(NULL, space); 
+
+            while (faceInstr != NULL) {
                 int posIndex, texCoordIndex, normalIndex;
-                sscanf(vertString.c_str(), "%d/%d/%d", &posIndex, &texCoordIndex, &normalIndex);
-                tempVerts.push_back(Vertex(positions[posIndex - 1], normals[normalIndex - 1], textureCoords[texCoordIndex - 1]));
+                sscanf(faceInstr, "%d/%d/%d", &posIndex, &texCoordIndex, &normalIndex);
+
+                tempVerts.push_back(Vertex(positions[posIndex - 1], normals[normalIndex - 1], texCoords[texCoordIndex - 1]));
+
+                faceInstr = strtok(NULL, space); 
+                faceVertCount++;
             }
 
-            tempIndicies.push_back(curIndex);
-            tempIndicies.push_back(curIndex + 1);
-            tempIndicies.push_back(curIndex + 2);
+            for (int i = 1; i < faceVertCount - 1; i++) {
+                tempIndicies.push_back(curVertIndex);
+                tempIndicies.push_back(curVertIndex + i);
+                tempIndicies.push_back(curVertIndex + i + 1);
+            }
 
-            tempIndicies.push_back(curIndex);
-            tempIndicies.push_back(curIndex + 2);
-            tempIndicies.push_back(curIndex + 3);
-
-            curIndex += 4; 
+            curVertIndex += faceVertCount;
         }
     }
     file.close();

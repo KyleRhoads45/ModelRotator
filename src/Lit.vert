@@ -13,8 +13,12 @@ out vec2 texCoord;
 out vec3 fragPos;
 
 void main() {
-	normal = mat3(transpose(inverse(model))) * iNormal;
+	//Transform normal into world space
+	//does not account for skewing with scaled model
+	normal = mat3(model) * iNormal;
+
 	texCoord = iTexCoord;
 	fragPos = vec3(model * vec4(iPos, 1.0));
+
 	gl_Position = projection * view * model * vec4(iPos, 1.0f);
 }
