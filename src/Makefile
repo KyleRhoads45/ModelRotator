@@ -7,7 +7,7 @@ LIBS = -L ../lib -lglfw3 -lgdi32
 OBJECTS = $(addprefix $(BUILD_DIR), Main.o Mesh.o Shader.o Vertex.o Glad.o Vector2.o Vector3.o Vector4.o Matrix4.o)
 
 ModelRotator:	$(OBJECTS) 
-	$(CXX) $(CFLAGS) $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR) $(LIBS)
+	$(CXX) $(CFLAGS) $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR) $(LIBS) -Wl,-subsystem,windows
 
 $(BUILD_DIR)Main.o:	main.cpp
 	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
