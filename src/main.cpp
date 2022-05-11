@@ -12,11 +12,11 @@ GLFWwindow* InitOpenGL() {
         exit(-1);
     } 
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     GLFWwindow* window = glfwCreateWindow(1920, 1080, "Model Rotator (340,000 verts)", NULL, NULL);
     glfwMakeContextCurrent(window);
@@ -53,7 +53,7 @@ void InitRenderBuffer(const Mesh& mesh) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh.indicies.size(), mesh.indicies.data(), GL_STATIC_DRAW);
 }
 
-void RotateMesh(Mesh& mesh) {
+void RotateMesh(const Mesh& mesh) {
     static float curRotation = 0.0f;
     static int vertCount = mesh.verts.size();
     static std::vector<Vertex> rotatedVerts = mesh.verts;
@@ -65,10 +65,10 @@ void RotateMesh(Mesh& mesh) {
     #pragma omp parallel for shared(proj, rotModel, mesh, rotatedVerts)
     for (int i = 0; i < vertCount; i++) {
         Vector4 pos = mesh.verts[i].position;
-        Vector4 normal = (Vector4)mesh.verts[i].normal; 
+        Vector4 normal = mesh.verts[i].normal; 
 
         rotatedVerts[i].position = proj * rotModel * pos;
-        rotatedVerts[i].normal = (Vector3)(proj * rotModel * normal);
+        rotatedVerts[i].normal = proj * rotModel * normal;
     }
 
     curRotation += 1.0f;
@@ -94,6 +94,7 @@ int main(void) {
         glfwSwapBuffers(window);
     }
 
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }

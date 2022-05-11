@@ -59,7 +59,7 @@ Mesh::Mesh(const char* modelFilePath) {
                 int posIndex, texCoordIndex, normalIndex;
                 sscanf(faceInstr, "%d/%d/%d", &posIndex, &texCoordIndex, &normalIndex);
 
-                Vertex vertex((Vector4)positions[posIndex - 1], normals[normalIndex - 1]);
+                Vertex vertex(positions[posIndex - 1], normals[normalIndex - 1]);
                 verts.push_back(vertex);
 
                 faceInstr = strtok(NULL, space); 
