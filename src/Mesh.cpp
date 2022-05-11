@@ -8,8 +8,6 @@
 
 Mesh::Mesh(const char* modelFilePath) {
     int curVertIndex = 0;
-    std::vector<Vertex> tempVerts;
-    std::vector<unsigned int> tempIndicies;
 
     std::vector<Vector3> positions;
     std::vector<Vector3> normals;
@@ -61,35 +59,20 @@ Mesh::Mesh(const char* modelFilePath) {
                 int posIndex, texCoordIndex, normalIndex;
                 sscanf(faceInstr, "%d/%d/%d", &posIndex, &texCoordIndex, &normalIndex);
 
-                tempVerts.push_back(Vertex(positions[posIndex - 1], normals[normalIndex - 1], texCoords[texCoordIndex - 1]));
+                Vertex vertex((Vector4)positions[posIndex - 1], normals[normalIndex - 1]);
+                verts.push_back(vertex);
 
                 faceInstr = strtok(NULL, space); 
                 faceVertCount++;
             }
 
             for (int i = 1; i < faceVertCount - 1; i++) {
-                tempIndicies.push_back(curVertIndex);
-                tempIndicies.push_back(curVertIndex + i);
-                tempIndicies.push_back(curVertIndex + i + 1);
+                indicies.push_back(curVertIndex);
+                indicies.push_back(curVertIndex + i);
+                indicies.push_back(curVertIndex + i + 1);
             }
 
             curVertIndex += faceVertCount;
         }
     }
-
-    vertCount = tempVerts.size();
-    verts = new Vertex[vertCount];
-    for (int i = 0; i < vertCount; i++) {
-        verts[i] = tempVerts[i];
-    }
-
-    indexCount = tempIndicies.size();
-    indicies = new unsigned int[indexCount];
-    for (int i = 0; i < indexCount; i++) {
-        indicies[i] = tempIndicies[i];
-    }
-}
-
-Mesh::~Mesh() {
-    delete[] verts;
 }

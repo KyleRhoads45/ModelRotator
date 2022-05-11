@@ -3,9 +3,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Matrix4::Matrix4() {
+Matrix4::Matrix4(const float identity) {
     for (int i = 0; i < MATRIX4_SIZE; i++) {
-        data[i] = (i % 5 == 0) ? 1.0f : 0.0f;
+        data[i] = (i % 5 == 0) ? identity : 0.0f;
     }
 }
 
@@ -16,7 +16,7 @@ Matrix4::Matrix4(float data[]) {
 }
 
 Matrix4 Matrix4::Perspective() {
-    Matrix4 mat4;
+    Matrix4 mat4(0.0f);
     mat4.data[0] = 1.357995f;
     mat4.data[5] = 2.414213f;
     mat4.data[10] = -1.002002;  
@@ -26,7 +26,7 @@ Matrix4 Matrix4::Perspective() {
 }
 
 Matrix4 Matrix4::Translate(const Matrix4& mat4, const Vector4& translation) {
-    Matrix4 transMat4;
+    Matrix4 transMat4(1.0f);
     transMat4.data[12] = translation.x;
     transMat4.data[13] = translation.y;
     transMat4.data[14] = translation.z;
@@ -34,7 +34,7 @@ Matrix4 Matrix4::Translate(const Matrix4& mat4, const Vector4& translation) {
 }
 
 Matrix4 Matrix4::RotateYAxis(const Matrix4& mat4, const float degrees) {
-    Matrix4 rotMat;
+    Matrix4 rotMat(1.0f);
     float rad = degrees * (M_PI / 180);
 
     rotMat.data[0] = cos(rad);

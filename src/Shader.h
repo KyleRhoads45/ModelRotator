@@ -12,7 +12,6 @@ public:
     Shader(const std::string& vertFile, const std::string& fragFile);
 
     void Bind();
-    void EnableTextureUnit(int texUnit);
     void SetUniformMat4(const std::string& name, const Matrix4& mat4);
 
 private:

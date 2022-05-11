@@ -8,7 +8,7 @@ struct Vector4;
 
 struct Matrix4 {
 
-    Matrix4();
+    Matrix4(const float identity);
     Matrix4(float newData[]);
 
     Vector4 operator*(const Vector4& vec4);

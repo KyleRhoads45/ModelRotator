@@ -3,10 +3,14 @@
 
 #include <iostream>
 
+struct Vector4;
+
 struct Vector3 {
 
     Vector3() = default;
     Vector3(float x, float y, float z);
+
+    explicit operator Vector4();
 
     float x = 0.0f;
     float y = 0.0f;

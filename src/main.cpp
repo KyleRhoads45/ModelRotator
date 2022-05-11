@@ -6,8 +6,6 @@
 #include "Shader.h"
 
 int main(void) {
-    GLFWwindow* window;
-
     if (!glfwInit()) {
         printf("Failed to initialize GLFW\n");
         return -1;
@@ -19,7 +17,7 @@ int main(void) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    window = glfwCreateWindow(1920, 1080, "Model Rotator (340,000 verts)", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "Model Rotator (340,000 verts)", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(0);
 
@@ -28,17 +26,12 @@ int main(void) {
         return -1;
     }
 
-    Matrix4 proj = Matrix4::Perspective();
-    Matrix4 model = Matrix4::Translate(Matrix4(), Vector4(0.0f, -0.3f, -4.0f, 1.0f));
-
-    Shader shader("Lit.vert", "Lit.frag");
-    shader.Bind();
-    shader.EnableTextureUnit(0);
-
-    shader.SetUniformMat4("model", model);
-    shader.SetUniformMat4("projection", proj);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     Mesh mesh("spider.obj");
+    Shader shader("Lit.vert", "Lit.frag");
+    shader.Bind();
 
     unsigned int vao;
     glGenVertexArrays(1, &vao);
@@ -47,35 +40,44 @@ int main(void) {
     unsigned int vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * mesh.vertCount, mesh.verts, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
 
     unsigned int ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh.indexCount, mesh.indicies, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh.indicies.size(), mesh.indicies.data(), GL_STATIC_DRAW);
+
+    std::vector<Vertex> rotatedVerts = mesh.verts;
+
+    Matrix4 proj = Matrix4::Perspective();
+    Matrix4 model = Matrix4::Translate(Matrix4(1.0f), Vector4(0.0f, -0.3f, -4.5f, 1.0f));
 
     float rot = 0.0f;
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
     while (!glfwWindowShouldClose(window)) {
+
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 
-        shader.SetUniformMat4("model", Matrix4::RotateYAxis(model, rot));
-        rot += 0.01f;
+        Matrix4 rotModel = Matrix4::RotateYAxis(model, rot);
+        for (size_t i = 0; i < mesh.verts.size(); i++) {
+            Vector4 pos = mesh.verts[i].position;
+            Vector4 normal = (Vector4)mesh.verts[i].normal; 
 
-        glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+            rotatedVerts[i].position = proj * rotModel * pos;
+            rotatedVerts[i].normal = (Vector3)(proj * rotModel * normal);
+        }
+        rot += 0.5f;
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * mesh.verts.size(), rotatedVerts.data(), GL_STATIC_DRAW);
+        glDrawElements(GL_TRIANGLES, mesh.indicies.size(), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
     }
 
     glfwTerminate();

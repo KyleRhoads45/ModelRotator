@@ -6,11 +6,10 @@
 struct Vertex {
 
     Vertex() = default;
-    Vertex(const Vector3& position, const Vector3& normal, const Vector2& texCoord);
+    Vertex(const Vector4& position, const Vector3& normal);
 
-    Vector3 position;
+    Vector4 position;
     Vector3 normal;
-    Vector2 texCoord;
 
 };
 
