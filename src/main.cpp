@@ -1,14 +1,15 @@
 #include <iostream>
+#include <omp.h>
 #include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
 #include "Math/KyleMath.h"
 #include "Mesh.h"
 #include "Shader.h"
 
-int main(void) {
+GLFWwindow* InitOpenGL() {
     if (!glfwInit()) {
         printf("Failed to initialize GLFW\n");
-        return -1;
+        exit(-1);
     } 
 
     glfwWindowHint(GLFW_SAMPLES, 4);
@@ -23,16 +24,16 @@ int main(void) {
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         printf("Failed to initialize glad\n");
-        return -1;
+        exit(-1);
     }
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    Mesh mesh("spider.obj");
-    Shader shader("Lit.vert", "Lit.frag");
-    shader.Bind();
+    return window;
+}
 
+void InitRenderBuffer(const Mesh& mesh) {
     unsigned int vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -50,34 +51,47 @@ int main(void) {
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh.indicies.size(), mesh.indicies.data(), GL_STATIC_DRAW);
+}
 
-    std::vector<Vertex> rotatedVerts = mesh.verts;
+void RotateMesh(Mesh& mesh) {
+    static float curRotation = 0.0f;
+    static int vertCount = mesh.verts.size();
+    static std::vector<Vertex> rotatedVerts = mesh.verts;
 
-    Matrix4 proj = Matrix4::Perspective();
-    Matrix4 model = Matrix4::Translate(Matrix4(1.0f), Vector4(0.0f, -0.3f, -4.5f, 1.0f));
+    static Matrix4 proj = Matrix4::Perspective();
+    static Matrix4 model = Matrix4::Translate(Matrix4(1.0f), Vector4(0.0f, -0.3f, -5.0f, 1.0f));
+    Matrix4 rotModel = Matrix4::RotateYAxis(model, curRotation);
 
-    float rot = 0.0f;
+    #pragma omp parallel for shared(proj, rotModel, mesh, rotatedVerts)
+    for (int i = 0; i < vertCount; i++) {
+        Vector4 pos = mesh.verts[i].position;
+        Vector4 normal = (Vector4)mesh.verts[i].normal; 
+
+        rotatedVerts[i].position = proj * rotModel * pos;
+        rotatedVerts[i].normal = (Vector3)(proj * rotModel * normal);
+    }
+
+    curRotation += 1.0f;
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * mesh.verts.size(), rotatedVerts.data(), GL_STATIC_DRAW);
+}
+
+int main(void) {
+    GLFWwindow* window = InitOpenGL();
+
+    Mesh mesh("Models/spider.obj");
+    Shader shader("Shaders/Lit.vert", "Shaders/Lit.frag");
+
+    InitRenderBuffer(mesh);
+
     while (!glfwWindowShouldClose(window)) {
-
+        glfwPollEvents();
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 
-        Matrix4 rotModel = Matrix4::RotateYAxis(model, rot);
-        for (size_t i = 0; i < mesh.verts.size(); i++) {
-            Vector4 pos = mesh.verts[i].position;
-            Vector4 normal = (Vector4)mesh.verts[i].normal; 
+        RotateMesh(mesh);
 
-            rotatedVerts[i].position = proj * rotModel * pos;
-            rotatedVerts[i].normal = (Vector3)(proj * rotModel * normal);
-        }
-        rot += 0.5f;
-
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * mesh.verts.size(), rotatedVerts.data(), GL_STATIC_DRAW);
         glDrawElements(GL_TRIANGLES, mesh.indicies.size(), GL_UNSIGNED_INT, 0);
-
         glfwSwapBuffers(window);
-        glfwPollEvents();
-
     }
 
     glfwTerminate();

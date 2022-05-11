@@ -1,8 +1,8 @@
 CXX = g++
-CFLAGS = -Wall -std=c++17
+CFLAGS = -Wall -std=c++17 -fopenmp
 BUILD_DIR = ../build/
 INCLUDE_DIR = -I ../include
-LIBS = -L ../lib -lglfw3 -lgdi32
+LIBS = -L ../lib -lglfw3 -lgdi32 -fopenmp
 
 OBJECTS = $(addprefix $(BUILD_DIR), Main.o Mesh.o Shader.o Vertex.o Glad.o Vector2.o Vector3.o Vector4.o Matrix4.o)
 

@@ -1,6 +1,6 @@
+#define _USE_MATH_DEFINES
 #include "Matrix4.h"
 #include "Vector4.h"
-#define _USE_MATH_DEFINES
 #include <math.h>
 
 Matrix4::Matrix4(const float identity) {
@@ -35,12 +35,12 @@ Matrix4 Matrix4::Translate(const Matrix4& mat4, const Vector4& translation) {
 
 Matrix4 Matrix4::RotateYAxis(const Matrix4& mat4, const float degrees) {
     Matrix4 rotMat(1.0f);
-    float rad = degrees * (M_PI / 180);
+    float radians = degrees * (M_PI / 180);
 
-    rotMat.data[0] = cos(rad);
-    rotMat.data[2] = -sin(rad);
-    rotMat.data[8] = sin(rad);
-    rotMat.data[10] = cos(rad);
+    rotMat.data[0] = cos(radians);
+    rotMat.data[2] = -sin(radians);
+    rotMat.data[8] = sin(radians);
+    rotMat.data[10] = cos(radians);
 
     return Multiply(mat4, rotMat);
 }
