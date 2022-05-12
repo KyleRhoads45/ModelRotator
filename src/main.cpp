@@ -2,9 +2,10 @@
 #include <omp.h>
 #include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
-#include "Math/KyleMath.h"
+#include "math/KyleMath.h"
 #include "Mesh.h"
 #include "Shader.h"
+#include "Timer.h"
 
 GLFWwindow* InitOpenGL() {
     if (!glfwInit()) {
@@ -53,7 +54,7 @@ void InitRenderBuffer(const Mesh& mesh) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh.indicies.size(), mesh.indicies.data(), GL_STATIC_DRAW);
 }
 
-void RotateMesh(const Mesh& mesh) {
+bool RotateMesh(const Mesh& mesh) {
     static float curRotation = 0.0f;
     static int vertCount = mesh.verts.size();
     static std::vector<Vertex> rotatedVerts = mesh.verts;
@@ -62,7 +63,9 @@ void RotateMesh(const Mesh& mesh) {
     static Matrix4 model = Matrix4::Translate(Matrix4(1.0f), Vector4(0.0f, -0.3f, -5.0f, 1.0f));
     Matrix4 rotModel = Matrix4::RotateYAxis(model, curRotation);
 
+    #ifdef OPEN_MP
     #pragma omp parallel for shared(proj, rotModel, mesh, rotatedVerts)
+    #endif
     for (int i = 0; i < vertCount; i++) {
         Vector4 pos = mesh.verts[i].position;
         Vector4 normal = mesh.verts[i].normal; 
@@ -73,28 +76,36 @@ void RotateMesh(const Mesh& mesh) {
 
     curRotation += 1.0f;
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * mesh.verts.size(), rotatedVerts.data(), GL_STATIC_DRAW);
+
+    return (curRotation >= 360);
 }
 
 int main(void) {
     GLFWwindow* window = InitOpenGL();
 
-    Mesh mesh("Models/spider.obj");
-    Shader shader("Shaders/Lit.vert", "Shaders/Lit.frag");
+    Mesh mesh("models/spider.obj");
+    Shader shader("shaders/Lit.vert", "shaders/Lit.frag");
 
     InitRenderBuffer(mesh);
+
+    Timer timer;
+    timer.StartTimer();
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 
-        RotateMesh(mesh);
+        if (RotateMesh(mesh)) break;
 
         glDrawElements(GL_TRIANGLES, mesh.indicies.size(), GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
     }
 
+    std::cout << "Time: " << timer.EndTimer() << " seconds\n"; 
+
     glfwDestroyWindow(window);
     glfwTerminate();
+
     return 0;
 }

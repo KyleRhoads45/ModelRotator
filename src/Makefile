@@ -1,41 +1,52 @@
 CXX = g++
-CFLAGS = -Wall -std=c++17 -fopenmp
-BUILD_DIR = ../build/
+CPPFLAGS = -Wall -std=c++17 -fopenmp -o3
 INCLUDE_DIR = -I ../include
 LIBS = -L ../lib -lglfw3 -lgdi32 -fopenmp
+OBJECT_DIR = ./objects/
 
-OBJECTS = $(addprefix $(BUILD_DIR), Main.o Mesh.o Shader.o Vertex.o Glad.o Vector2.o Vector3.o Vector4.o Matrix4.o)
+OBJECTS = $(addprefix $(OBJECT_DIR), Glad.o Mesh.o Shader.o Vertex.o Timer.o Vector2.o Vector3.o Vector4.o Matrix4.o)
 
-ModelRotator:	$(OBJECTS) 
-	$(CXX) $(CFLAGS) $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR) $(LIBS)
+all: ModelRotatorParallel ModelRotatorSequential
 
-$(BUILD_DIR)Main.o:	main.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+ModelRotatorParallel:	$(OBJECT_DIR)MainOMP.o $(OBJECTS) 
+	$(CXX) $(CPPFLAGS) $? -o $@ $(INCLUDE_DIR) $(LIBS)
 
-$(BUILD_DIR)Mesh.o:	Mesh.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+ModelRotatorSequential:	$(OBJECT_DIR)MainSeq.o $(OBJECTS) 
+	$(CXX) $(CPPFLAGS) $? -o $@ $(INCLUDE_DIR) $(LIBS)
 
-$(BUILD_DIR)Shader.o:	Shader.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+$(OBJECT_DIR)MainOMP.o:	main.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@ $(INCLUDE_DIR) -D OPEN_MP
 
-$(BUILD_DIR)Vertex.o:	Vertex.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+$(OBJECT_DIR)MainSeq.o:	main.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@ $(INCLUDE_DIR)
 
-$(BUILD_DIR)Glad.o:	../include/GLAD/glad.c
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@ $(INCLUDE_DIR)
+$(OBJECT_DIR)Glad.o:	../include/GLAD/glad.c
+	$(CXX) $(CPPFLAGS) -c $? -o $@ $(INCLUDE_DIR)
 
-$(BUILD_DIR)Vector2.o:	Math/Vector2.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
+$(OBJECT_DIR)Mesh.o:	Mesh.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@ $(INCLUDE_DIR)
 
-$(BUILD_DIR)Vector3.o:	Math/Vector3.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
+$(OBJECT_DIR)Shader.o:	Shader.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@ $(INCLUDE_DIR)
 
-$(BUILD_DIR)Vector4.o:	Math/Vector4.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
+$(OBJECT_DIR)Vertex.o:	Vertex.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@ $(INCLUDE_DIR)
 
-$(BUILD_DIR)Matrix4.o:	Math/Matrix4.cpp
-	$(CXX) $(CFLAGS) -c $? -o $(BUILD_DIR)$@
+$(OBJECT_DIR)Timer.o:	Timer.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@ $(INCLUDE_DIR)
+
+$(OBJECT_DIR)Vector2.o:	math/Vector2.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@
+
+$(OBJECT_DIR)Vector3.o:	math/Vector3.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@
+
+$(OBJECT_DIR)Vector4.o:	math/Vector4.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@
+
+$(OBJECT_DIR)Matrix4.o:	math/Matrix4.cpp
+	$(CXX) $(CPPFLAGS) -c $? -o $@
 
 clean:
-	del ..\build\*.o
-	del ..\build\*.exe
+	del .\objects\*.o
+	del *.exe

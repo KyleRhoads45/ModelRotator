@@ -1,7 +1,7 @@
 #ifndef VERTEX
 #define VERTEX
 
-#include "Math/KyleMath.h"
+#include "math/KyleMath.h"
 
 struct Vertex {
 

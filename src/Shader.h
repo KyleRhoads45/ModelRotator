@@ -1,7 +1,7 @@
 #ifndef SHADER
 #define SHADER
 
-#include "Math/KyleMath.h"
+#include "math/KyleMath.h"
 #include <string>
 
 class Shader {
