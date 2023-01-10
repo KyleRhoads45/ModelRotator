@@ -5,7 +5,7 @@ This is a multi-threaded program that loads any .obj 3D model and rotates it on 
 
 ### Features
 * Custom Math Library
-** 4x4 Matrix
+>* 4x4 Matrix
 ** Vector4
 ** Vector3
 ** Vector2
