@@ -11,4 +11,5 @@ This is a multi-threaded program that loads any .obj 3D model and rotates it on 
 >* Vector2
 * Custom Obj Parser
 * Multi-threaded Rotation
+* Diffuse Lighting
 
